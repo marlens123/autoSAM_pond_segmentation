@@ -10,9 +10,9 @@ This code requires `python>=3.10`, as well as `pytorch>=1.7` and `torchvision>=0
 
 SAM model checkpoints can be downloaded from [SAM](https://github.com/facebookresearch/segment-anything#model-checkpoints) and should be placed in 'segment_anything_checkpoints/'.
 
-The TIR dataset will be published in the future. The training data used in this work can be accessed from [here](). Training data should be placed in 'dataset/melt_ponds/'.
+The TIR dataset will be published in the future. The training data used in this work can be accessed from [here](https://drive.google.com/drive/folders/1IWzR09t3Visb1Jy8a8rsvbERpgZpYaB0?usp=drive_link). Training data should be placed in 'dataset/melt_ponds/'.
 
-The weights of the currently best performing model configuration can be downloaded from [here]() and should be placed in 'experiments/AutoSamPonds3/'.
+The weights of the current model configuration can be downloaded from [here](https://drive.google.com/drive/folders/1Dm9pOtBx5CKlAI21p_ACf-pwEICZRzYP?usp=drive_link) and should be placed in 'experiments/AutoSamPonds3/'.
 
 ## How to use
 GPU required.

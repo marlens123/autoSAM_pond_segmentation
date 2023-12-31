@@ -6,7 +6,7 @@ This repository adapts AutoSAM introduced by Xinrong Hu et al. ([Link](https://a
 [Link](https://github.com/marlens123/pond_segmentation) to the U-net, Att-U-net and PSP-net implementation of the same task.
 
 ## Setup
-This code requires `python>=3.10`, as well as `pytorch>=1.7` and `torchvision>=0.8`.  Install additional packages using ```pip install -r requirements.txt``.
+This code requires `python>=3.10`, as well as `pytorch>=1.7` and `torchvision>=0.8`.  Install additional packages using ```pip install -r requirements.txt```.
 
 SAM model checkpoints can be downloaded from [SAM](https://github.com/facebookresearch/segment-anything#model-checkpoints) and should be placed in 'segment_anything_checkpoints/'.
 

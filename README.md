@@ -38,7 +38,7 @@ python scripts/main_autosam_seg.py --save_dir ${storage_folder_name} --normalize
 - test vit_l and vit_h (memory of currently used GPU too small)
 
 ## Credits
-The AutoSAM implementation is based on the work of [Hu, Xinrong and Xu, Xiaowei and Shi, Yiyu](https://github.com/xhu248/AutoSAM), licensed under the Apache 2.0 License.
+The AutoSAM implementation is based on the work of [Hu, Xinrong and Xu, Xiaowei and Shi, Yiyu](https://github.com/xhu248/AutoSAM), licensed under the Apache 2.0 License. Modifications are listed in the respective files.
 
 Full citation of AutoSAM:
 ```

@@ -22,7 +22,7 @@ GPU required.
 ### Predict images with fine-tuned AutoSAM
 
 ```
-python scripts/infer_ponds.py --pref ${storage_folder_name} --data 'dataset/melt_pond_prediction/raw/${path_to_nc_file_to_be_predicted}' --weights_path 'experiments/AutoSamPonds3/model.pth' --normalize
+python scripts/infer_ponds.py --pref ${storage_folder_name} --data 'data/prediction/raw/${path_to_nc_file_to_be_predicted}' --weights_path 'experiments/AutoSamPonds3/model.pth' --normalize
 ```
 (full data for prediction currently not provided)
 

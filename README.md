@@ -31,7 +31,7 @@ python scripts/infer_ponds.py --pref ${storage_folder_name} --data 'data/predict
 python scripts/main_autosam_seg.py --save_dir ${storage_folder_name} --normalize
 ```
 
-## TO-DOs
+## To-Do's
 - develop more reliable evaluation method (the small amount of labeled data makes it difficult to provide a reliable metric; current evaluation is mainly based on qualitative inspection; k-crossfold validation implementation work in progress)
 - label more data for difficult cases
 - hyperparameter optimization
@@ -54,6 +54,6 @@ Full citation of AutoSAM:
 [1] Kanzow, Thorsten (2023). The Expedition PS131 of the Research Vessel POLARSTERN to the
 Fram Strait in 2022. Ed. by Horst Bornemann and Susan Amir Sawadkuhi. Bremerhaven. DOI: 10.57738/BzPM\_0770\_2023.
 
-**Contact**: mareil@uni-osnabrueck.de
+This repo is based on my work as a student assistant in the [Remote Sensing of Polar Regions group](https://seaice.uni-bremen.de/research-group/), University of Bremen under the supervision of Dr. Gunnar Spreen.
 
-This repo is based on my work as a student assistant in the [Remote Sensing of Polar Regions group](https://seaice.uni-bremen.de/research-group/) at the University of Bremen under the supervision of Dr. Gunnar Spreen.
+**Contact**: mareil@uni-osnabrueck.de

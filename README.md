@@ -3,7 +3,7 @@
 
 This repository adapts AutoSAM introduced by Xinrong Hu et al. ([Link](https://arxiv.org/pdf/2306.13731.pdf) to author's paper) to the segmentation of Arctic thermal infrared images.
 
-![compare_new](https://github.com/marlens123/autoSAM_pond_segmentation/assets/80780236/a6966df3-514f-4bcd-a555-84f61144b5be)
+![comopare_new](https://github.com/marlens123/autoSAM_pond_segmentation/assets/80780236/2c1fba65-ec67-4fae-9a80-9c0ecfb3a269)
 *(code for Att-Unet implementation can be found [here](https://github.com/marlens123/pond_segmentation)*)
 
 ## Setup

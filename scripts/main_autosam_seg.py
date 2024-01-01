@@ -1,7 +1,13 @@
+import sys
+import os
+
+# add parent directory to system path
+parent_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, parent_dir)
+
 import argparse
 import builtins
 import math
-import os
 import random
 import shutil
 import time
@@ -33,8 +39,8 @@ from loss_functions.metrics import dice_pytorch, SegmentationMetric
 from models.build_autosam_seg_model import sam_seg_model_registry
 
 from torch.utils.data import DataLoader
-from dataset.melt_ponds.scripts.melt_ponds import Dataset
-from dataset.melt_ponds.scripts.utils import compute_class_weights
+from scripts.data import Dataset
+from scripts.utils import compute_class_weights
 
 parser = argparse.ArgumentParser(description='PyTorch ImageNet Training')
 
@@ -83,10 +89,10 @@ parser.add_argument('--multiprocessing-distributed', action='store_true',
 parser.add_argument('--model_type', type=str, default="vit_b", help='path to splits file')
 parser.add_argument('--src_dir', type=str, default=None, help='path to splits file')
 parser.add_argument('--data_dir', type=str, default=None, help='path to datafolder')
-parser.add_argument('--images_train_dir', type=str, default='dataset/melt_ponds/train_images.npy')
-parser.add_argument('--masks_train_dir', type=str, default='dataset/melt_ponds/train_masks.npy')
-parser.add_argument('--images_test_dir', type=str, default='dataset/melt_ponds/test_images.npy')
-parser.add_argument('--masks_test_dir', type=str, default='dataset/melt_ponds/test_masks.npy')
+parser.add_argument('--images_train_dir', type=str, default='data/training/train_images.npy')
+parser.add_argument('--masks_train_dir', type=str, default='data/training/train_masks.npy')
+parser.add_argument('--images_test_dir', type=str, default='data/training/test_images.npy')
+parser.add_argument('--masks_test_dir', type=str, default='data/training/test_masks.npy')
 parser.add_argument('--augmentation', default=False, action='store_true')
 parser.add_argument('--augment_mode', default='1', help='1 = flip, crop, rotate, sharpen/blur, 2 = flip, rotate, 3 = sharpen/blur')
 parser.add_argument('--normalize', default=False, action='store_true')

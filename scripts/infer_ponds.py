@@ -5,23 +5,22 @@ import os
 parent_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, parent_dir)
 
-import os
 import re
 import cv2
 import csv
 import netCDF4
 import argparse
 import matplotlib.pyplot as plt
-from dataset.melt_ponds.scripts.predict_helpers import calculate_mpf, predict_image, crop_center_square, label_to_pixelvalue
+from scripts.utils import calculate_mpf, predict_image, crop_center_square, label_to_pixelvalue
 
 parser = argparse.ArgumentParser(description="Uses trained model to predict and store surface masks from netCDF file containing TIR images from a single helicopter flight. Optional calculation of melt pond fraction (MPF).")
 
 parser.add_argument("--pref", type=str, default="001", help="Identifier for the current prediction. Will be used as foldername to store results.")
 
 parser.add_argument("--data", default="IRdata_ATWAICE_preprocessed_220718_142920.nc", type=str, help="Either: 1) Filename of netCDF data file. For this, data must be stored in 'data/prediction/raw'. Or: 2) Absolute path to netCDF data file. Then data must not be copied in advance.")
-parser.add_argument("--weights_path", default="experiments/AutoSamPonds1/model.pth", type=str, help="Path to model weights that should be used. Must contain the model architecture as second-to-last part of path (should be per default).")
-parser.add_argument("--preprocessed_path", default="dataset/melt_ponds_prediction/preprocessed", type=str, help="Path to folder that should store the preprocessed images.")
-parser.add_argument("--predicted_path", default="dataset/melt_ponds_prediction/predicted", type=str, help="Path to folder that should store the predicted image masks.")
+parser.add_argument("--weights_path", default="experiments/AutoSamPonds3/model.pth", type=str, help="Path to model weights that should be used. Must contain the model architecture as second-to-last part of path (should be per default).")
+parser.add_argument("--preprocessed_path", default="data/prediction/preprocessed", type=str, help="Path to folder that should store the preprocessed images.")
+parser.add_argument("--predicted_path", default="data/prediction/predicted", type=str, help="Path to folder that should store the predicted image masks.")
 parser.add_argument("--metrics_path", default="metrics/melt_pond_fraction/", type=str, help="Path to .csv file that should store the resulting mpf (if calculation is desired).")
 parser.add_argument("--model_type", default="vit_b", type=str, help="Model type that should be used. Must be the same as in 'weights_path'.")
 parser.add_argument("--skip_mpf", default=True, action="store_false", help="Skips the calculation of the melt pond fraction for the predicted flight.")
@@ -104,18 +103,20 @@ def main():
         # extract surface masks from images
         for idx, file in enumerate(os.listdir(params['preprocessed_path'])):
             os.makedirs(os.path.join(params['predicted_path'], 'raw/'), exist_ok = True)
+            id = file.split('.')[0]
 
             if file.endswith('.png'):
                 img = cv2.imread(os.path.join(params['preprocessed_path'], file), 0)
-                predict_image(img, 480, params['weights_path'], model_type=params['model_type'], backbone='resnet34', train_transfer='imagenet', save_path=os.path.join(params['predicted_path'],'raw/{}.png'.format(idx)), visualize=False, normalize=params['normalize'], no_finetune=params['no_finetune'], model_arch=params['model'])
+                predict_image(img, 480, params['weights_path'], model_type=params['model_type'], backbone='resnet34', train_transfer='imagenet', save_path=os.path.join(params['predicted_path'],'raw/{}.png'.format(id)), visualize=False, normalize=params['normalize'], no_finetune=params['no_finetune'], model_arch=params['model'])
 
     # optionally convert to grayscale images for visibility
     if params['convert_to_grayscale']:
         os.makedirs(os.path.join(params['predicted_path'], 'grayscale/'), exist_ok = True)
 
         for idx, file in enumerate(os.listdir(os.path.join(params['predicted_path'],'raw/'))):
+            id = file.split('.')[0]
             im = label_to_pixelvalue(cv2.imread(os.path.join(params['predicted_path'],'raw/', file)))
-            cv2.imwrite(os.path.join(params['predicted_path'],'grayscale/{}.png'.format(idx)), im)
+            cv2.imwrite(os.path.join(params['predicted_path'],'grayscale/{}.png'.format(id)), im)
 
 
     # optionally calculate melt pond fraction and store in csv file

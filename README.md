@@ -55,3 +55,5 @@ Full citation of AutoSAM:
 Fram Strait in 2022. Ed. by Horst Bornemann and Susan Amir Sawadkuhi. Bremerhaven. DOI: 10.57738/BzPM\_0770\_2023.
 
 **Contact**: mareil@uni-osnabrueck.de
+
+This repo is based on my work as a student assistant in the [Remote Sensing of Polar Regions group](https://seaice.uni-bremen.de/research-group/) at the University of Bremen under the supervision of Dr. Gunnar Spreen.

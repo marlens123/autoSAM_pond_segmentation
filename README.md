@@ -1,7 +1,7 @@
 # AutoSAM for Melt Pond Detection 
 (work in progress)
 
-This repository adapts AutoSAM introduced by Xinrong Hu et al. ([Link](https://arxiv.org/pdf/2306.13731.pdf) to author's paper) to the segmentation of Arctic thermal infrared images.
+This repository adapts AutoSAM introduced by Xinrong Hu et al. ([Link](https://arxiv.org/pdf/2306.13731.pdf) to author's paper) to the segmentation of helicopter-borne Arctic thermal infrared images. The segmentation should be done into three classes: melt ponds, sea ice, and ocean. A particular challenge for TIR imagery is the presence of spatially and temporally varying surface temperatures, so that classification cannot be based on spectral features alone.
 
 
 ![comopare_new](https://github.com/marlens123/autoSAM_pond_segmentation/assets/80780236/2c1fba65-ec67-4fae-9a80-9c0ecfb3a269)

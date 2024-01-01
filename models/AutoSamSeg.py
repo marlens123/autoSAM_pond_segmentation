@@ -1,3 +1,5 @@
+# COPYRIGHT 2023 Xinrong Hu et al. https://github.com/xhu248/AutoSAM
+
 from typing import List
 import torch
 import torch.nn as nn

@@ -1,3 +1,6 @@
+# COPYRIGHT 2023 Xinrong Hu et al. https://github.com/xhu248/AutoSAM
+# Modification: Adaption to melt ponds dataset and removal of medical dataset-specific content
+
 import sys
 import os
 

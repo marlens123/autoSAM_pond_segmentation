@@ -1,3 +1,5 @@
+# inspired by https://github.com/qubvel/segmentation_models.pytorch
+
 import os
 import cv2
 import numpy as np

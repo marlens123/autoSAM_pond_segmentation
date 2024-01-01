@@ -1,3 +1,5 @@
+# COPYRIGHT 2023 Xinrong Hu et al. https://github.com/xhu248/AutoSAM
+
 import threading
 import torch
 import numpy as np

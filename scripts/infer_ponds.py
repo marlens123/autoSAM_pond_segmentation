@@ -23,8 +23,8 @@ parser.add_argument("--preprocessed_path", default="data/prediction/preprocessed
 parser.add_argument("--predicted_path", default="data/prediction/predicted", type=str, help="Path to folder that should store the predicted image masks.")
 parser.add_argument("--metrics_path", default="metrics/melt_pond_fraction/", type=str, help="Path to .csv file that should store the resulting mpf (if calculation is desired).")
 parser.add_argument("--model_type", default="vit_b", type=str, help="Model type that should be used. Must be the same as in 'weights_path'.")
-parser.add_argument("--skip_mpf", default=True, action="store_false", help="Skips the calculation of the melt pond fraction for the predicted flight.")
-parser.add_argument("--skip_preprocessing", default=True, action="store_false", help="Skips preprocessing. Can be used to directly perform mpf calculation. In that case, 'predicted_path' must contain predicted images.")
+parser.add_argument("--skip_mpf", default=False, action="store_true", help="Skips the calculation of the melt pond fraction for the predicted flight.")
+parser.add_argument("--skip_preprocessing", default=False, action="store_true", help="Skips preprocessing. Can be used to directly perform mpf calculation. In that case, 'predicted_path' must contain predicted images.")
 parser.add_argument("--skip_prediction", default=False, action="store_true", help="Skips prediction process. Can be used to directly perform mpf calculation. In that case, 'predicted_path' must contain predicted images.")
 parser.add_argument("--convert_to_grayscale", default=True, action="store_false", help="Converts predicted images to grayscale for visualization and stores in 'data/prediction/predicted/[pref]/grayscale'.")
 parser.add_argument("--normalize", default=False, action="store_true", help="Normalize images before prediction. Should be used if model was trained with normalized images.")
@@ -77,7 +77,7 @@ def main():
             ds = netCDF4.Dataset(params['data'])
             print("Abs path is used.")
         else:
-            ds = netCDF4.Dataset(os.path.join('dataset/melt_ponds_prediction/raw', id, params['data']))
+            ds = netCDF4.Dataset(os.path.join('data/prediction/raw', id, params['data']))
             print("Rel path is used.")
         imgs = ds.variables['Ts'][:]
 

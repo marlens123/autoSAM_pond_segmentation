@@ -379,6 +379,7 @@ def train(train_loader, class_weights, model, optimizer, scheduler, epoch, args,
         batch_time.update(time.time() - end)
         end = time.time()
         writer.add_scalar('train_loss', loss, global_step=i + epoch * len(train_loader))
+        writer.add_scalar('train_iou', torch.mean(iou_pred), global_step=i + epoch * len(train_loader))
 
         if i % args.print_freq == 0:
             print('Train: [{0}][{1}/{2}]\t'
@@ -418,6 +419,7 @@ def validate(val_loader, model, epoch, args, writer):
 
     print('Validating: Epoch: %2d Loss: %.4f IoU_pred: %.4f' % (epoch, np.mean(loss_list), iou_pred.item()))
     writer.add_scalar("val_loss", np.mean(loss_list), epoch)
+    writer.add_scalar("val_iou", iou_pred.item(), epoch)
     return np.mean(loss_list)
 
 

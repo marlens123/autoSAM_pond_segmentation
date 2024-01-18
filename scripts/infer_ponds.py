@@ -28,7 +28,7 @@ parser.add_argument("--skip_preprocessing", default=False, action="store_true", 
 parser.add_argument("--skip_prediction", default=False, action="store_true", help="Skips prediction process. Can be used to directly perform mpf calculation. In that case, 'predicted_path' must contain predicted images.")
 parser.add_argument("--convert_to_grayscale", default=True, action="store_false", help="Converts predicted images to grayscale for visualization and stores in 'data/prediction/predicted/[pref]/grayscale'.")
 parser.add_argument("--normalize", default=False, action="store_true", help="Normalize images before prediction. Should be used if model was trained with normalized images.")
-parser.add_argument("--no_finetune", default=False, action="store_true", help="Skips finetuning of model. Should be used if model was trained without finetuning.")
+parser.add_argument("--no_finetune", default=False, action="store_true", help="Should be used if model was trained without finetuning.")
 parser.add_argument("--model", type=str, default="autosam")
 
 def main():

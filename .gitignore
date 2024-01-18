@@ -162,10 +162,13 @@ cython_debug/
 # wandb
 wandb/
 
+run_new.sh
+
 # data
 *.png
 *.nc
-*.npy
+
+data/training/training_old/
 
 # weights and checkpoints
 *.pth

@@ -165,8 +165,10 @@ wandb/
 run_new.sh
 
 # data
-*.png
 *.nc
+
+*.png
+!predictions/*
 
 data/training/training_old/
 

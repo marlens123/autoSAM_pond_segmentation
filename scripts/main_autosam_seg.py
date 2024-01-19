@@ -50,6 +50,7 @@ import torchvision.datasets as datasets
 from torch.utils.tensorboard import SummaryWriter
 from torch.optim.lr_scheduler import ReduceLROnPlateau
 import torchvision.models as models
+from torchmetrics import JaccardIndex
 
 from loss_functions.dice_loss import SoftDiceLoss
 from loss_functions.metrics import dice_pytorch, SegmentationMetric
@@ -60,11 +61,15 @@ from torch.utils.data import DataLoader
 from scripts.data import Dataset
 from scripts.utils import compute_class_weights
 
+import wandb
+
+wandb.login()
+
 parser = argparse.ArgumentParser(description='PyTorch ImageNet Training')
 
 parser.add_argument('-j', '--workers', default=12, type=int, metavar='N',
                     help='number of data loading workers (default: 32)')
-parser.add_argument('--epochs', default=300, type=int, metavar='N',
+parser.add_argument('--epochs', default=100, type=int, metavar='N',
                     help='number of total epochs to run')
 parser.add_argument('--start-epoch', default=0, type=int, metavar='N',
                     help='manual epoch number (useful on restarts)')
@@ -107,12 +112,12 @@ parser.add_argument('--multiprocessing-distributed', action='store_true',
 parser.add_argument('--model_type', type=str, default="vit_b", help='path to splits file')
 parser.add_argument('--src_dir', type=str, default=None, help='path to splits file')
 parser.add_argument('--data_dir', type=str, default=None, help='path to datafolder')
-parser.add_argument('--images_train_dir', type=str, default='data/training/train_images.npy')
-parser.add_argument('--masks_train_dir', type=str, default='data/training/train_masks.npy')
-parser.add_argument('--images_test_dir', type=str, default='data/training/test_images.npy')
-parser.add_argument('--masks_test_dir', type=str, default='data/training/test_masks.npy')
+parser.add_argument('--images_train_dir', type=str, default='data/training/train_images_n_2.npy')
+parser.add_argument('--masks_train_dir', type=str, default='data/training/train_masks_n_2.npy')
+parser.add_argument('--images_test_dir', type=str, default='data/training/test_images_n_2.npy')
+parser.add_argument('--masks_test_dir', type=str, default='data/training/test_masks_n_2.npy')
 parser.add_argument('--augmentation', default=False, action='store_true')
-parser.add_argument('--augment_mode', default='1', help='1 = flip, crop, rotate, sharpen/blur, 2 = flip, rotate, 3 = sharpen/blur')
+parser.add_argument('--augment_mode', default='3', help='1 = flip, crop, rotate, sharpen/blur, 2 = flip, rotate, 3 = sharpen/blur')
 parser.add_argument('--normalize', default=False, action='store_true')
 parser.add_argument("--img_size", type=int, default=480)
 parser.add_argument("--classes", type=int, default=3)
@@ -120,7 +125,7 @@ parser.add_argument("--do_contrast", default=False, action='store_true')
 parser.add_argument("--slice_threshold", type=float, default=0.05)
 parser.add_argument("--num_classes", type=int, default=3)
 parser.add_argument("--fold", type=int, default=0)
-parser.add_argument("--tr_size", type=int, default=19)
+parser.add_argument("--tr_size", type=int, default=11)
 parser.add_argument("--save_dir", type=str, default=None)
 parser.add_argument("--load_saved_model", action='store_true',
                         help='whether freeze encoder of the segmenter')
@@ -294,6 +299,9 @@ def main_worker(gpu, ngpus_per_node, args):
 
     best_loss = 100
 
+    wandb.init(project='sam',config=args)
+    wandb.watch(model, log_freq=2)
+
     for epoch in range(args.start_epoch, args.epochs):
         print('EPOCH {}:'.format(epoch + 1))
         is_best = False
@@ -367,6 +375,9 @@ def train(train_loader, class_weights, model, optimizer, scheduler, epoch, args,
         loss = ce_loss(mask, label.squeeze(1)) + dice_loss(pred_softmax, label.squeeze(1))
                # + dice_loss(pred_softmax, label.squeeze(1))
 
+        jaccard = JaccardIndex(task='multiclass', num_classes=3).to(args.gpu)
+        jac = jaccard(torch.argmax(mask,dim=1), label.squeeze(1))
+
         # acc1/acc5 are (K+1)-way contrast classifier accuracy
         # measure accuracy and record loss
 
@@ -385,6 +396,12 @@ def train(train_loader, class_weights, model, optimizer, scheduler, epoch, args,
             print('Train: [{0}][{1}/{2}]\t'
                   'loss {loss:.4f}'.format(epoch, i, len(train_loader), loss=loss.item()))
 
+    wandb.log({"train_loss": loss})
+    wandb.log({"train_jac": jac})
+    #wandb.log({"train_iou": torch.mean(iou_pred)})
+    wandb.log({"epoch": epoch})
+    
+    
     if epoch >= 10:
         scheduler.step(loss)
 
@@ -392,6 +409,9 @@ def train(train_loader, class_weights, model, optimizer, scheduler, epoch, args,
 def validate(val_loader, model, epoch, args, writer):
     loss_list = []
     dice_list = []
+    jac_list_mp = []
+    jac_list_si = []
+    jac_list_oc = []
     dice_loss = SoftDiceLoss(batch_dice=True, do_bg=False)
     model.eval()
 
@@ -417,7 +437,21 @@ def validate(val_loader, model, epoch, args, writer):
             loss = dice_loss(pred_softmax, label.squeeze(1))  # self.ce_loss(pred, target.squeeze())
             loss_list.append(loss.item())
 
+            jaccard = JaccardIndex(task='multiclass', num_classes=3, average=None).to(args.gpu)
+            jac = jaccard(pred_softmax, label.squeeze(1))
+            jac_list_mp.append(jac[0].item())
+            jac_list_si.append(jac[1].item())
+            jac_list_oc.append(jac[2].item())
+
+    wandb.log({"val_loss": np.mean(loss_list)})
+    wandb.log({"val_jac_mp": np.mean(jac_list_mp)})
+    wandb.log({"val_jac_si": np.mean(jac_list_si)})
+    wandb.log({"val_jac_oc": np.mean(jac_list_oc)})
+    wandb.log({"val_iou": torch.mean(iou_pred)})
+    wandb.log({"epoch": epoch})
+
     print('Validating: Epoch: %2d Loss: %.4f IoU_pred: %.4f' % (epoch, np.mean(loss_list), iou_pred.item()))
+    print('new_iou: ' + str(jac))
     writer.add_scalar("val_loss", np.mean(loss_list), epoch)
     writer.add_scalar("val_iou", iou_pred.item(), epoch)
     return np.mean(loss_list)

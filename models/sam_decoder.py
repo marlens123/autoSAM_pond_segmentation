@@ -24,6 +24,7 @@ class MaskDecoder(nn.Module):
         iou_head_depth: int = 3,
         iou_head_hidden_dim: int = 256,
         num_classes: int = 4,
+        dropout: bool = False,
     ) -> None:
         """
         Predicts masks given an image and prompt embeddings, using a
@@ -66,10 +67,10 @@ class MaskDecoder(nn.Module):
                 MLP(transformer_dim, transformer_dim, transformer_dim // 8, 3)
                 for i in range(self.num_mask_tokens)
             ]
-        )
+        )   
 
         self.iou_prediction_head = MLP(
-            transformer_dim, iou_head_hidden_dim, self.num_mask_tokens, iou_head_depth
+            input_dim=transformer_dim, hidden_dim=iou_head_hidden_dim, output_dim=self.num_mask_tokens, num_layers=iou_head_depth, dropout=dropout,
         )
 
     def forward(
@@ -193,6 +194,8 @@ class MLP(nn.Module):
         hidden_dim: int,
         output_dim: int,
         num_layers: int,
+        dropout_prob: float = 0.2,
+        dropout: bool = False,
         sigmoid_output: bool = False,
     ) -> None:
         super().__init__()
@@ -201,11 +204,19 @@ class MLP(nn.Module):
         self.layers = nn.ModuleList(
             nn.Linear(n, k) for n, k in zip([input_dim] + h, h + [output_dim])
         )
+        # Dropout layer before the output layer
+        self.dropout = dropout
+        self.dropout_l = nn.Dropout(p=dropout_prob)
         self.sigmoid_output = sigmoid_output
 
     def forward(self, x):
         for i, layer in enumerate(self.layers):
             x = F.relu(layer(x)) if i < self.num_layers - 1 else layer(x)
+        
+        # Apply dropout before the output layer
+        if self.dropout:
+            x = self.dropout_l(x)
+
         if self.sigmoid_output:
             x = F.sigmoid(x)
         return x

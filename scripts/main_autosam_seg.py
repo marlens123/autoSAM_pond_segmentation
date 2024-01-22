@@ -67,6 +67,7 @@ wandb.login()
 
 parser = argparse.ArgumentParser(description='PyTorch ImageNet Training')
 
+parser.add_argument('--pref', default='default', type=str, help='used for wandb logging')
 parser.add_argument('-j', '--workers', default=12, type=int, metavar='N',
                     help='number of data loading workers (default: 32)')
 parser.add_argument('--epochs', default=100, type=int, metavar='N',
@@ -82,6 +83,8 @@ parser.add_argument('--lr', '--learning-rate', default=0.0005, type=float,
                     metavar='LR', help='initial learning rate', dest='lr')
 parser.add_argument('--schedule', default=[120, 160], nargs='*', type=int,
                     help='learning rate schedule (when to drop lr by 10x)')
+parser.add_argument('--deactivate_schedule', default=True, action='store_false',
+                    help='deactivate learning rate schedule')
 parser.add_argument('--momentum', default=0.9, type=float, metavar='M',
                     help='momentum of SGD solver')
 parser.add_argument('--wd', '--weight-decay', default=1e-4, type=float,
@@ -133,6 +136,7 @@ parser.add_argument("--saved_model_path", type=str, default=None)
 parser.add_argument("--load_pseudo_label", default=False, action='store_true')
 parser.add_argument("--dataset", type=str, default="acdc")
 parser.add_argument("--use_class_weights", default=False, action='store_true')
+parser.add_argument("--dropout", default=False, action='store_true', help='if to use dropout in the last layer (prob 0.5)')
 
 
 def main():
@@ -210,7 +214,7 @@ def main_worker(gpu, ngpus_per_node, args):
     elif args.model_type == 'vit_b':
         model_checkpoint = 'segment_anything_checkpoints/sam_vit_b_01ec64.pth'
 
-    model = sam_seg_model_registry[args.model_type](num_classes=args.num_classes, checkpoint=model_checkpoint)
+    model = sam_seg_model_registry[args.model_type](num_classes=args.num_classes, checkpoint=model_checkpoint, dropout=args.dropout)
 
     if args.distributed:
         # For multiprocessing distributed, DistributedDataParallel constructor
@@ -249,7 +253,7 @@ def main_worker(gpu, ngpus_per_node, args):
         # param.requires_grad = True
 
     optimizer = torch.optim.Adam(filter(lambda p: p.requires_grad, model.parameters()), lr=args.lr)
-    scheduler = ReduceLROnPlateau(optimizer, 'min')
+    scheduler = ReduceLROnPlateau(optimizer, 'min', patience=20)
 
     # optionally resume from a checkpoint
     if args.resume:
@@ -284,7 +288,7 @@ def main_worker(gpu, ngpus_per_node, args):
     train_dataset = Dataset(args, mode='train')
     test_dataset = Dataset(args, mode='test')
 
-    train_loader = DataLoader(train_dataset, batch_size=args.batch_size, shuffle=True, num_workers=args.workers)
+    train_loader = DataLoader(train_dataset, batch_size=args.batch_size, shuffle=True, num_workers=args.workers, seed=5)
     test_loader = DataLoader(test_dataset, batch_size=1, shuffle=False, num_workers=args.workers)
 
     #train_loader, train_sampler, val_loader, val_sampler, test_loader, test_sampler = generate_dataset(args)
@@ -299,7 +303,7 @@ def main_worker(gpu, ngpus_per_node, args):
 
     best_loss = 100
 
-    wandb.init(project='sam',config=args)
+    wandb.init(project='sam',name=args.pref,config=args)
     wandb.watch(model, log_freq=2)
 
     for epoch in range(args.start_epoch, args.epochs):
@@ -319,10 +323,13 @@ def main_worker(gpu, ngpus_per_node, args):
         train(train_loader, class_weights, model, optimizer, scheduler, epoch, args, writer)
         loss = validate(test_loader, model, epoch, args, writer)
 
+        #if epoch >= 10:
+         #  scheduler.step(loss)
+
         if loss < best_loss:
             is_best = True
             best_loss = loss
-            torch.save(model.state_dict(), args.save_dir + '/model.pth')
+            torch.save(model.state_dict(), args.save_dir + '/model{}.pth'.format(epoch))
 
         # if not args.multiprocessing_distributed or (args.multiprocessing_distributed
         #         and args.rank % ngpus_per_node == 0):
@@ -396,10 +403,10 @@ def train(train_loader, class_weights, model, optimizer, scheduler, epoch, args,
             print('Train: [{0}][{1}/{2}]\t'
                   'loss {loss:.4f}'.format(epoch, i, len(train_loader), loss=loss.item()))
 
-    wandb.log({"train_loss": loss})
-    wandb.log({"train_jac": jac})
+    wandb.log({"epoch": epoch, "train_loss": loss})
+    wandb.log({"epoch": epoch, "train_jac": jac})
     #wandb.log({"train_iou": torch.mean(iou_pred)})
-    wandb.log({"epoch": epoch})
+    #wandb.log({"epoch": epoch})
     
     
     if epoch >= 10:
@@ -412,12 +419,12 @@ def validate(val_loader, model, epoch, args, writer):
     jac_list_mp = []
     jac_list_si = []
     jac_list_oc = []
+    jac_mean = []
     dice_loss = SoftDiceLoss(batch_dice=True, do_bg=False)
     model.eval()
 
     with torch.no_grad():
         for i, tup in enumerate(val_loader):
-            # measure data loading time
 
             if args.gpu is not None:
                 img = tup[0].float().cuda(args.gpu, non_blocking=True)
@@ -438,17 +445,31 @@ def validate(val_loader, model, epoch, args, writer):
             loss_list.append(loss.item())
 
             jaccard = JaccardIndex(task='multiclass', num_classes=3, average=None).to(args.gpu)
+            jaccard_mean = JaccardIndex(task='multiclass', num_classes=3).to(args.gpu)
+            
             jac = jaccard(pred_softmax, label.squeeze(1))
+            jac_m = jaccard_mean(pred_softmax, label.squeeze(1))
+
             jac_list_mp.append(jac[0].item())
             jac_list_si.append(jac[1].item())
             jac_list_oc.append(jac[2].item())
+            jac_mean.append(jac_m.item())
 
-    wandb.log({"val_loss": np.mean(loss_list)})
-    wandb.log({"val_jac_mp": np.mean(jac_list_mp)})
-    wandb.log({"val_jac_si": np.mean(jac_list_si)})
-    wandb.log({"val_jac_oc": np.mean(jac_list_oc)})
-    wandb.log({"val_iou": torch.mean(iou_pred)})
-    wandb.log({"epoch": epoch})
+            wandb.log({"epoch": epoch, "val_loss_{}".format(i): loss.item()})
+            wandb.log({"epoch": epoch, "val_jac_mp_{}".format(i): jac[0].item()})
+            wandb.log({"epoch": epoch, "val_jac_si_{}".format(i): jac[1].item()})
+            wandb.log({"epoch": epoch, "val_jac_oc_{}".format(i): jac[2].item()})
+            wandb.log({"epoch": epoch, "val_jac_{}".format(i): jac_m.item()})
+            #wandb.log({"val_iou": torch.mean(iou_pred)})
+            #wandb.log({"epoch": epoch})
+
+    wandb.log({"epoch": epoch, "val_loss": np.mean(loss_list)})
+    wandb.log({"epoch": epoch, "val_jac_mp": np.mean(jac_list_mp)})
+    wandb.log({"epoch": epoch, "val_jac_si": np.mean(jac_list_si)})
+    wandb.log({"epoch": epoch, "val_jac_oc": np.mean(jac_list_oc)})
+    wandb.log({"epoch": epoch, "val_jac": np.mean(jac_mean)})
+    #wandb.log({"val_iou": torch.mean(iou_pred)})
+    #wandb.log({"epoch": epoch})
 
     print('Validating: Epoch: %2d Loss: %.4f IoU_pred: %.4f' % (epoch, np.mean(loss_list), iou_pred.item()))
     print('new_iou: ' + str(jac))

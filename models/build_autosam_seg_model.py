@@ -30,6 +30,7 @@ def _build_sam_seg_model(
     encoder_global_attn_indexes,
     num_classes,
     checkpoint=None,
+    dropout=False,
 ):
     prompt_embed_dim = 256
     image_size = 1024
@@ -61,6 +62,7 @@ def _build_sam_seg_model(
             iou_head_depth=3,
             iou_head_hidden_dim=256,
             num_classes=num_classes,
+            dropout=dropout
         ),
     )
 
@@ -103,7 +105,7 @@ def build_sam_vit_l_seg_cnn(num_classes=3, checkpoint=None):
     )
 
 
-def build_sam_vit_b_seg_cnn(num_classes=3, checkpoint=None):
+def build_sam_vit_b_seg_cnn(num_classes=3, checkpoint=None, dropout=False):
     return _build_sam_seg_model(
         encoder_embed_dim=768,
         encoder_depth=12,
@@ -111,6 +113,7 @@ def build_sam_vit_b_seg_cnn(num_classes=3, checkpoint=None):
         encoder_global_attn_indexes=[2, 5, 8, 11],
         num_classes=num_classes,
         checkpoint=checkpoint,
+        dropout=dropout,
     )
 
 

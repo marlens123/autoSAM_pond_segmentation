@@ -288,7 +288,7 @@ def main_worker(gpu, ngpus_per_node, args):
     train_dataset = Dataset(args, mode='train')
     test_dataset = Dataset(args, mode='test')
 
-    train_loader = DataLoader(train_dataset, batch_size=args.batch_size, shuffle=True, num_workers=args.workers, seed=5)
+    train_loader = DataLoader(train_dataset, batch_size=args.batch_size, shuffle=True, num_workers=args.workers)
     test_loader = DataLoader(test_dataset, batch_size=1, shuffle=False, num_workers=args.workers)
 
     #train_loader, train_sampler, val_loader, val_sampler, test_loader, test_sampler = generate_dataset(args)
@@ -302,8 +302,9 @@ def main_worker(gpu, ngpus_per_node, args):
     filename = os.path.join(args.save_dir, 'checkpoint_b%d.pth.tar' % (args.batch_size))
 
     best_loss = 100
+    best_mp_iou = 0.38
 
-    wandb.init(project='sam',name=args.pref,config=args)
+    wandb.init(project='sam',group='distribution',name=args.pref,config=args)
     wandb.watch(model, log_freq=2)
 
     for epoch in range(args.start_epoch, args.epochs):
@@ -321,7 +322,7 @@ def main_worker(gpu, ngpus_per_node, args):
 
         # train for one epoch
         train(train_loader, class_weights, model, optimizer, scheduler, epoch, args, writer)
-        loss = validate(test_loader, model, epoch, args, writer)
+        loss, mp_iou = validate(test_loader, model, epoch, args, writer)
 
         #if epoch >= 10:
          #  scheduler.step(loss)
@@ -330,6 +331,11 @@ def main_worker(gpu, ngpus_per_node, args):
             is_best = True
             best_loss = loss
             torch.save(model.state_dict(), args.save_dir + '/model{}.pth'.format(epoch))
+        
+        if epoch > 100:
+            if mp_iou > best_mp_iou:
+                best_mp_iou = mp_iou
+                torch.save(model.state_dict(), args.save_dir + '/model_mp_{}.pth'.format(epoch))
 
         # if not args.multiprocessing_distributed or (args.multiprocessing_distributed
         #         and args.rank % ngpus_per_node == 0):
@@ -475,7 +481,7 @@ def validate(val_loader, model, epoch, args, writer):
     print('new_iou: ' + str(jac))
     writer.add_scalar("val_loss", np.mean(loss_list), epoch)
     writer.add_scalar("val_iou", iou_pred.item(), epoch)
-    return np.mean(loss_list)
+    return np.mean(loss_list), np.mean(jac_list_mp)
 
 
 def test(model, args):

@@ -1,0 +1,1 @@
+python scripts/infer_ponds.py --pref '2301_1' --data 'dataset/melt_ponds_prediction/raw/220717_2/IRdata_ATWAICE_processed_220717_122355.nc' --weights_path 'experiments/2301_1/model_mp_142.pth' --normalize --skip_preprocessing --preprocessed_path 'data/prediction/preprocessed/val/'

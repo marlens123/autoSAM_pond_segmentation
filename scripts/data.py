@@ -71,7 +71,8 @@ class Dataset(BaseDataset):
 
         # apply normalization
         if self.normalize:
-            image = (image - image.min()) / (image.max() - image.min())
+            #image = (image - image.min()) / (image.max() - image.min())
+            image = (image - image.mean()) / image.std()
 
         if self.mode == 'train' and self.augmentation:
             augmentation = get_training_augmentation(im_size=480, augment_mode=self.augment_mode)

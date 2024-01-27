@@ -36,6 +36,14 @@ def get_training_augmentation(im_size=480, augment_mode='1'):
     -------
         train_transform : albumentations.compose
     """
+    if augment_mode == '0':
+        train_transform = [
+            A.HorizontalFlip(p=0.5),
+            A.VerticalFlip(),   
+            A.Rotate(interpolation=0),
+            A.RandomSizedCrop(min_max_height=[int(0.5*im_size), int(0.8*im_size)], height=im_size, width=im_size, interpolation=0, p=0.5),     
+        ]
+    
     if augment_mode == '1':
         train_transform = [
             A.HorizontalFlip(p=0.5),
@@ -53,7 +61,6 @@ def get_training_augmentation(im_size=480, augment_mode='1'):
         ]
 
     if augment_mode == '2':
-        print('hello')
         train_transform = [
             A.HorizontalFlip(p=0.5),
             A.VerticalFlip(),   

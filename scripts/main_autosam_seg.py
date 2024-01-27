@@ -121,7 +121,7 @@ parser.add_argument('--images_test_dir', type=str, default='data/training/test_i
 parser.add_argument('--masks_test_dir', type=str, default='data/training/test_masks_n_2.npy')
 parser.add_argument('--augmentation', default=False, action='store_true')
 parser.add_argument('--augment_mode', default='3', help='1 = flip, crop, rotate, sharpen/blur, 2 = flip, rotate, 3 = sharpen/blur')
-parser.add_argument('--normalize', default=False, action='store_true')
+parser.add_argument('--normalize', default=False, action='store_true', help='z-score normalization')
 parser.add_argument("--img_size", type=int, default=480)
 parser.add_argument("--classes", type=int, default=3)
 parser.add_argument("--do_contrast", default=False, action='store_true')
@@ -207,14 +207,15 @@ def main_worker(gpu, ngpus_per_node, args):
     # create model
 
     if args.model_type=='vit_h':
-        print('hello')
         model_checkpoint = 'segment_anything_checkpoints/sam_vit_h_4b8939.pth'
+        model = sam_seg_model_registry[args.model_type](num_classes=args.num_classes, checkpoint=model_checkpoint)
     elif args.model_type == 'vit_l':
         model_checkpoint = 'segment_anything_checkpoints/sam_vit_l_0b3195.pth'
+        model = sam_seg_model_registry[args.model_type](num_classes=args.num_classes, checkpoint=model_checkpoint)
     elif args.model_type == 'vit_b':
         model_checkpoint = 'segment_anything_checkpoints/sam_vit_b_01ec64.pth'
+        model = sam_seg_model_registry[args.model_type](num_classes=args.num_classes, checkpoint=model_checkpoint, dropout=args.dropout)
 
-    model = sam_seg_model_registry[args.model_type](num_classes=args.num_classes, checkpoint=model_checkpoint, dropout=args.dropout)
 
     if args.distributed:
         # For multiprocessing distributed, DistributedDataParallel constructor
@@ -278,9 +279,11 @@ def main_worker(gpu, ngpus_per_node, args):
     # compute class weights
     if args.use_class_weights:
         class_weights = compute_class_weights(args.masks_train_dir)
+        class_weights_np = class_weights
         class_weights = torch.from_numpy(class_weights).float().cuda(args.gpu)
     else:
         class_weights = None
+        class_weights_np= None
 
     print("Class weights are...:", class_weights)
 
@@ -321,7 +324,7 @@ def main_worker(gpu, ngpus_per_node, args):
         writer.add_scalar("lr", optimizer.param_groups[0]["lr"], global_step=epoch)
 
         # train for one epoch
-        train(train_loader, class_weights, model, optimizer, scheduler, epoch, args, writer)
+        train(train_loader, class_weights, model, optimizer, scheduler, epoch, args, writer, class_weights_np=class_weights_np)
         loss, mp_iou = validate(test_loader, model, epoch, args, writer)
 
         #if epoch >= 10:
@@ -355,11 +358,11 @@ def main_worker(gpu, ngpus_per_node, args):
         test_brats(args)
     """
 
-def train(train_loader, class_weights, model, optimizer, scheduler, epoch, args, writer):
+def train(train_loader, class_weights, model, optimizer, scheduler, epoch, args, writer, class_weights_np=None):
     batch_time = AverageMeter('Time', ':6.3f')
     data_time = AverageMeter('Data', ':6.3f')
     losses = AverageMeter('Loss', ':.4e')
-    dice_loss = SoftDiceLoss(batch_dice=True, do_bg=False)
+    dice_loss = SoftDiceLoss(batch_dice=True, do_bg=False, rebalance_weights=class_weights_np)
     ce_loss = torch.nn.CrossEntropyLoss(weight=class_weights)
 
     # switch to train mode
@@ -409,8 +412,8 @@ def train(train_loader, class_weights, model, optimizer, scheduler, epoch, args,
             print('Train: [{0}][{1}/{2}]\t'
                   'loss {loss:.4f}'.format(epoch, i, len(train_loader), loss=loss.item()))
 
-    wandb.log({"epoch": epoch, "train_loss": loss})
-    wandb.log({"epoch": epoch, "train_jac": jac})
+    wandb.log({"epoch": epoch, "2601_aug/train_loss": loss})
+    wandb.log({"epoch": epoch, "2601_aug/train_jac": jac})
     #wandb.log({"train_iou": torch.mean(iou_pred)})
     #wandb.log({"epoch": epoch})
     
@@ -461,19 +464,19 @@ def validate(val_loader, model, epoch, args, writer):
             jac_list_oc.append(jac[2].item())
             jac_mean.append(jac_m.item())
 
-            wandb.log({"epoch": epoch, "val_loss_{}".format(i): loss.item()})
-            wandb.log({"epoch": epoch, "val_jac_mp_{}".format(i): jac[0].item()})
-            wandb.log({"epoch": epoch, "val_jac_si_{}".format(i): jac[1].item()})
-            wandb.log({"epoch": epoch, "val_jac_oc_{}".format(i): jac[2].item()})
-            wandb.log({"epoch": epoch, "val_jac_{}".format(i): jac_m.item()})
+            wandb.log({"epoch": epoch, "2601_aug/val_loss_{}".format(i): loss.item()})
+            wandb.log({"epoch": epoch, "2601_aug/val_jac_mp_{}".format(i): jac[0].item()})
+            wandb.log({"epoch": epoch, "2601_aug/val_jac_si_{}".format(i): jac[1].item()})
+            wandb.log({"epoch": epoch, "2601_aug/val_jac_oc_{}".format(i): jac[2].item()})
+            wandb.log({"epoch": epoch, "2601_aug/val_jac_{}".format(i): jac_m.item()})
             #wandb.log({"val_iou": torch.mean(iou_pred)})
             #wandb.log({"epoch": epoch})
 
-    wandb.log({"epoch": epoch, "val_loss": np.mean(loss_list)})
-    wandb.log({"epoch": epoch, "val_jac_mp": np.mean(jac_list_mp)})
-    wandb.log({"epoch": epoch, "val_jac_si": np.mean(jac_list_si)})
-    wandb.log({"epoch": epoch, "val_jac_oc": np.mean(jac_list_oc)})
-    wandb.log({"epoch": epoch, "val_jac": np.mean(jac_mean)})
+    wandb.log({"epoch": epoch, "2601_aug/val_loss": np.mean(loss_list)})
+    wandb.log({"epoch": epoch, "2601_aug/val_jac_mp": np.mean(jac_list_mp)})
+    wandb.log({"epoch": epoch, "2601_aug/val_jac_si": np.mean(jac_list_si)})
+    wandb.log({"epoch": epoch, "2601_aug/val_jac_oc": np.mean(jac_list_oc)})
+    wandb.log({"epoch": epoch, "2601_aug/val_jac": np.mean(jac_mean)})
     #wandb.log({"val_iou": torch.mean(iou_pred)})
     #wandb.log({"epoch": epoch})
 

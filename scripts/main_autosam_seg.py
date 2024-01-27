@@ -279,7 +279,9 @@ def main_worker(gpu, ngpus_per_node, args):
     # compute class weights
     if args.use_class_weights:
         class_weights = compute_class_weights(args.masks_train_dir)
+        # for dice loss component
         class_weights_np = class_weights
+        # for cce loss component
         class_weights = torch.from_numpy(class_weights).float().cuda(args.gpu)
     else:
         class_weights = None
@@ -330,10 +332,12 @@ def main_worker(gpu, ngpus_per_node, args):
         #if epoch >= 10:
          #  scheduler.step(loss)
 
+        """
         if loss < best_loss:
             is_best = True
             best_loss = loss
             torch.save(model.state_dict(), args.save_dir + '/model{}.pth'.format(epoch))
+        """
         
         if epoch > 100:
             if mp_iou > best_mp_iou:

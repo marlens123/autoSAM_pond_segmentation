@@ -103,9 +103,6 @@ def to_tensor(x, **kwargs):
 def get_preprocessing():
     """Construct preprocessing transform
     
-    Args:
-        preprocessing_fn (callbale): data normalization function 
-            (can be specific for each pretrained neural network)
     Return:
         transform: albumentations.Compose
     

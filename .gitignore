@@ -176,6 +176,7 @@ data/training/training_old/
 
 # weights and checkpoints
 *.pth
+!experiments/2801_2/model_mp_145.pth
 
 # test files
 test.py

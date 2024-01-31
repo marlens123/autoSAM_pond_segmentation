@@ -2,10 +2,7 @@
 
 (Training and test data is stored in ```data/training/``` and we provide the weights of our final model in ```experiments/2801_2/``` (lfs tracked)).
 
-This repository adapts AutoSAM introduced by Xinrong Hu et al. ([Link](https://arxiv.org/pdf/2306.13731.pdf) to authors' paper) to the segmentation of helicopter-borne Arctic thermal infrared images. The segmentation should be done into three classes: melt ponds, sea ice, and ocean. A particular challenge for TIR imagery is the presence of spatially and temporally varying surface temperatures, so that classification cannot be based on spectral features alone.
-
-![compare_240103_rand](https://github.com/marlens123/autoSAM_pond_segmentation/assets/80780236/49797ca3-7c5d-414f-874c-803835b342ba)
-*(code for Att-Unet and PSP-Net implementation can be found [here](https://github.com/marlens123/pond_segmentation)*)
+This repository adapts AutoSAM introduced by Xinrong Hu et al. (credits below) to the segmentation of helicopter-borne Arctic thermal infrared images. The segmentation should be done into three classes: melt ponds, sea ice, and ocean. A particular challenge for TIR imagery is the presence of spatially and temporally varying surface temperatures, so that classification cannot be based on spectral features alone.
 
 ## Setup
 This code requires `python>=3.10`, as well as `pytorch>=1.7` and `torchvision>=0.8`.  Install additional packages using ```pip install -r requirements.txt```.
@@ -46,7 +43,3 @@ Full citation of AutoSAM:
 ## Further Reference
 [1] Kanzow, Thorsten (2023). The Expedition PS131 of the Research Vessel POLARSTERN to the
 Fram Strait in 2022. Ed. by Horst Bornemann and Susan Amir Sawadkuhi. Bremerhaven. DOI: 10.57738/BzPM\_0770\_2023.
-
-This repo is based on my work as a student assistant in the [Remote Sensing of Polar Regions group](https://seaice.uni-bremen.de/research-group/), University of Bremen under the supervision of Dr. Gunnar Spreen.
-
-**Contact**: mareil@uni-osnabrueck.de

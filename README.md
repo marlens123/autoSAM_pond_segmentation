@@ -27,6 +27,7 @@ python scripts/infer_ponds.py --pref ${storage_folder_name} --data 'data/predict
 ### Finetune AutoSAM
 ```
 python scripts/main_autosam_seg.py --save_dir ${storage_folder_name} --normalize
+python scripts/main_autosam_seg.py --save_dir ${storage_folder_name} --normalize --epochs 150 --augmentation --augment_mode 2 --pref ${pref_name_of_choice} --use_class_weights
 ```
 
 ## Credits

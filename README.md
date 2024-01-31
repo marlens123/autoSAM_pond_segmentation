@@ -4,9 +4,6 @@
 
 This repository adapts AutoSAM introduced by Xinrong Hu et al. ([Link](https://arxiv.org/pdf/2306.13731.pdf) to authors' paper) to the segmentation of helicopter-borne Arctic thermal infrared images. The segmentation should be done into three classes: melt ponds, sea ice, and ocean. A particular challenge for TIR imagery is the presence of spatially and temporally varying surface temperatures, so that classification cannot be based on spectral features alone.
 
-## Current Results
-(more examples are uploaded to ```predictions/```, where left=input, middle=Att-Unet, right=AutoSAM)
-
 ![compare_240103_rand](https://github.com/marlens123/autoSAM_pond_segmentation/assets/80780236/49797ca3-7c5d-414f-874c-803835b342ba)
 *(code for Att-Unet and PSP-Net implementation can be found [here](https://github.com/marlens123/pond_segmentation)*)
 
@@ -23,7 +20,7 @@ GPU required.
 ### Predict images with fine-tuned AutoSAM
 
 ```
-python scripts/infer_ponds.py --pref ${storage_folder_name} --data 'data/prediction/raw/${path_to_nc_file_to_be_predicted}' --weights_path 'experiments/AutoSamPonds3/model.pth' --normalize
+python scripts/infer_ponds.py --pref ${storage_folder_name} --data 'data/prediction/raw/${path_to_nc_file_to_be_predicted}' --weights_path 'experiments/2801_2/145_mp_model.pth' --normalize
 ```
 (full data for prediction currently not provided)
 

@@ -1,6 +1,6 @@
 # AutoSAM for Melt Pond Detection 
 
-(Training and test data is stored in ```data/training/``` (lfs tracked))
+(Training and test data is stored in ```data/training/``` and we provide the weights of our final model in ```experiments/2801_2/``` (lfs tracked)).
 
 This repository adapts AutoSAM introduced by Xinrong Hu et al. ([Link](https://arxiv.org/pdf/2306.13731.pdf) to authors' paper) to the segmentation of helicopter-borne Arctic thermal infrared images. The segmentation should be done into three classes: melt ponds, sea ice, and ocean. A particular challenge for TIR imagery is the presence of spatially and temporally varying surface temperatures, so that classification cannot be based on spectral features alone.
 
@@ -15,9 +15,7 @@ This code requires `python>=3.10`, as well as `pytorch>=1.7` and `torchvision>=0
 
 SAM model checkpoints can be downloaded from [SAM](https://github.com/facebookresearch/segment-anything#model-checkpoints) and should be placed in ```segment_anything_checkpoints/```.
 
-The TIR images used were acquired during the PS131 ATWAICE Campaign [1]. The dataset will be published in the future.
-
-The weights of the current model configuration can be downloaded from [here](https://drive.google.com/drive/folders/1Dm9pOtBx5CKlAI21p_ACf-pwEICZRzYP?usp=drive_link) and should be placed in ```experiments/AutoSamPonds3/```.
+The TIR images used were acquired during the PS131 ATWAICE Campaign [1]. The entire dataset will be published in the future.
 
 ## How to use
 GPU required.
@@ -33,12 +31,6 @@ python scripts/infer_ponds.py --pref ${storage_folder_name} --data 'data/predict
 ```
 python scripts/main_autosam_seg.py --save_dir ${storage_folder_name} --normalize
 ```
-
-## To-Do's
-- develop more reliable evaluation method (the small amount of labeled data makes it difficult to provide a reliable metric; current evaluation is mainly based on qualitative inspection; k-crossfold validation implementation work in progress)
-- label more data for difficult cases
-- hyperparameter optimization
-- test vit_l and vit_h (memory of currently used GPU too small)
 
 ## Credits
 The AutoSAM implementation is based on the work of [Hu, Xinrong and Xu, Xiaowei and Shi, Yiyu](https://github.com/xhu248/AutoSAM), licensed under the Apache 2.0 License. Modifications are listed in the respective files.

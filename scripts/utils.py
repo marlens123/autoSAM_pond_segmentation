@@ -196,7 +196,8 @@ def preprocess_prediction(image, model_preprocessing, smooth=False, normalize=Fa
 
     # apply normalization
     if normalize:
-        image = (image - image.min()) / (image.max() - image.min())
+        #image = (image - image.min()) / (image.max() - image.min())
+        image = (image - image.mean()) / image.std()
 
     sample = model_preprocessing(image=image, mask=random_mask)
     image, _ = sample['image'], sample['mask']

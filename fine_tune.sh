@@ -43,7 +43,50 @@
 #python scripts/main_autosam_seg.py --save_dir './2201_2_no_3' --normalize --epochs 150 --pref '2201_2_no_3'
 #python scripts/main_autosam_seg.py --save_dir './2201_2_no_4' --normalize --epochs 150 --pref '2201_2_no_4'
 
-python scripts/main_autosam_seg.py --save_dir './2301_1' --normalize --epochs 150 --augmentation --augment_mode 2 --pref '2301_1'
-python scripts/main_autosam_seg.py --save_dir './2301_2' --normalize --epochs 150 --augmentation --augment_mode 2 --pref '2301_2'
-python scripts/main_autosam_seg.py --save_dir './2301_3' --normalize --epochs 150 --augmentation --augment_mode 2 --pref '2301_3'
-python scripts/main_autosam_seg.py --save_dir './2301_4' --normalize --epochs 150 --augmentation --augment_mode 2 --pref '2301_4'
+#python scripts/main_autosam_seg.py --save_dir './2301_1' --normalize --epochs 150 --augmentation --augment_mode 2 --pref '2301_1'
+#python scripts/main_autosam_seg.py --save_dir './2301_2' --normalize --epochs 150 --augmentation --augment_mode 2 --pref '2301_2'
+#python scripts/main_autosam_seg.py --save_dir './2301_3' --normalize --epochs 150 --augmentation --augment_mode 2 --pref '2301_3'
+#python scripts/main_autosam_seg.py --save_dir './2301_4' --normalize --epochs 150 --augmentation --augment_mode 2 --pref '2301_4'
+
+#python scripts/main_autosam_seg.py --save_dir './2401_1' --normalize --epochs 150 --augmentation --augment_mode 2 --pref '2401_1' --model_type 'vit_l'
+
+#python scripts/main_autosam_seg.py --save_dir './2401_2' --normalize --epochs 150 --augmentation --augment_mode 4 --pref '2401_2'
+#python scripts/main_autosam_seg.py --save_dir './2401_3' --normalize --epochs 150 --augmentation --augment_mode 4 --pref '2401_3'
+
+#python scripts/main_autosam_seg.py --save_dir './2401_4' --normalize --epochs 150 --augmentation --augment_mode 2 --pref '2401_4' --use_class_weights
+
+#python scripts/main_autosam_seg.py --save_dir './2501_1' --normalize --epochs 150 --augmentation --augment_mode 2 --pref '2501_1'
+#python scripts/main_autosam_seg.py --save_dir './2501_2' --normalize --epochs 150 --augmentation --augment_mode 2 --pref '2501_2'
+#python scripts/main_autosam_seg.py --save_dir './2501_3' --normalize --epochs 150 --augmentation --augment_mode 2 --pref '2501_3'
+#python scripts/main_autosam_seg.py --save_dir './2501_4' --normalize --epochs 150 --augmentation --augment_mode 2 --pref '2501_4'
+#python scripts/main_autosam_seg.py --save_dir './2501_5' --normalize --epochs 150 --augmentation --augment_mode 2 --pref '2501_5'
+
+#python scripts/main_autosam_seg.py --save_dir './2501_1_cw' --normalize --epochs 150 --augmentation --augment_mode 2 --pref '2501_1_cw' --use_class_weights
+#python scripts/main_autosam_seg.py --save_dir './2501_2_cw' --normalize --epochs 150 --augmentation --augment_mode 2 --pref '2501_2_cw' --use_class_weights
+#python scripts/main_autosam_seg.py --save_dir './2501_3_cw' --normalize --epochs 150 --augmentation --augment_mode 2 --pref '2501_3_cw' --use_class_weights
+#python scripts/main_autosam_seg.py --save_dir './2501_4_cw' --normalize --epochs 150 --augmentation --augment_mode 2 --pref '2501_4_cw' --use_class_weights
+#python scripts/main_autosam_seg.py --save_dir './2501_5_cw' --normalize --epochs 150 --augmentation --augment_mode 2 --pref '2501_5_cw' --use_class_weights
+
+#python scripts/main_autosam_seg.py --save_dir './2601_1_z' --normalize --epochs 150 --augmentation --augment_mode 2 --pref '2601_1_z' --use_class_weights
+#python scripts/main_autosam_seg.py --save_dir './2601_2_z' --normalize --epochs 150 --augmentation --augment_mode 2 --pref '2601_2_z' --use_class_weights
+#python scripts/main_autosam_seg.py --save_dir './2601_3_z' --normalize --epochs 150 --augmentation --augment_mode 2 --pref '2601_3_z' --use_class_weights
+#python scripts/main_autosam_seg.py --save_dir './2601_4_z' --normalize --epochs 150 --augmentation --augment_mode 2 --pref '2601_4_z' --use_class_weights
+#python scripts/main_autosam_seg.py --save_dir './2601_5_z' --normalize --epochs 150 --augmentation --augment_mode 2 --pref '2601_5_z' --use_class_weights
+
+#python scripts/main_autosam_seg.py --save_dir './2501_aug0' --normalize --epochs 150 --augmentation --augment_mode 0 --pref '2501_aug0' --use_class_weights
+#python scripts/main_autosam_seg.py --save_dir './2501_aug1' --normalize --epochs 150 --augmentation --augment_mode 1 --pref '2501_aug1' --use_class_weights
+#python scripts/main_autosam_seg.py --save_dir './2501_aug2' --normalize --epochs 150 --augmentation --augment_mode 2 --pref '2501_aug2' --use_class_weights
+#python scripts/main_autosam_seg.py --save_dir './2501_aug3' --normalize --epochs 150 --augmentation --augment_mode 3 --pref '2501_aug3' --use_class_weights
+#python scripts/main_autosam_seg.py --save_dir './2501_aug4' --normalize --epochs 150 --augmentation --augment_mode 4 --pref '2501_aug4' --use_class_weights
+
+#python scripts/main_autosam_seg.py --save_dir './2701' --normalize --epochs 150 --augmentation --augment_mode 2 --pref '2701'
+#python scripts/main_autosam_seg.py --save_dir './2701' --normalize --epochs 150 --augmentation --augment_mode 2 --pref '2701'
+#python scripts/main_autosam_seg.py --save_dir './2701' --normalize --epochs 150 --augmentation --augment_mode 2 --pref '2701'
+#python scripts/main_autosam_seg.py --save_dir './2701' --normalize --epochs 150 --augmentation --augment_mode 2 --pref '2701'
+#python scripts/main_autosam_seg.py --save_dir './2701' --normalize --epochs 150 --augmentation --augment_mode 2 --pref '2701'
+
+python scripts/main_autosam_seg.py --save_dir './2801_1' --normalize --epochs 150 --augmentation --augment_mode 2 --pref '2801_1' --use_class_weights
+python scripts/main_autosam_seg.py --save_dir './2801_2' --normalize --epochs 150 --augmentation --augment_mode 2 --pref '2801_2' --use_class_weights
+python scripts/main_autosam_seg.py --save_dir './2801_3' --normalize --epochs 150 --augmentation --augment_mode 2 --pref '2801_3' --use_class_weights
+python scripts/main_autosam_seg.py --save_dir './2801_4' --normalize --epochs 150 --augmentation --augment_mode 2 --pref '2801_4' --use_class_weights
+python scripts/main_autosam_seg.py --save_dir './2801_5' --normalize --epochs 150 --augmentation --augment_mode 2 --pref '2801_5' --use_class_weights

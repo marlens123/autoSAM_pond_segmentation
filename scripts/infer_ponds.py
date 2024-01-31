@@ -30,6 +30,7 @@ parser.add_argument("--convert_to_grayscale", default=True, action="store_false"
 parser.add_argument("--normalize", default=False, action="store_true", help="Normalize images before prediction. Should be used if model was trained with normalized images.")
 parser.add_argument("--no_finetune", default=False, action="store_true", help="Should be used if model was trained without finetuning.")
 parser.add_argument("--model", type=str, default="autosam")
+parser.add_argument("--val_predict", default=False, action='store_true', help="to be activated when predicting validation imgs")
 
 def main():
     args = parser.parse_args()
@@ -57,7 +58,8 @@ def main():
         formatted_date = f"20{date_part[:2]}-{date_part[2:4]}-{date_part[4:]}"
         print(f"The date in the filename is: {formatted_date}")
 
-        params['preprocessed_path'] = os.path.join(params['preprocessed_path'], id)
+        if not params['val_predict']:
+            params['preprocessed_path'] = os.path.join(params['preprocessed_path'], id)
         os.makedirs(params['preprocessed_path'], exist_ok = True)
 
     else:

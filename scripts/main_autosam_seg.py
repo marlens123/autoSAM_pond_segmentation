@@ -343,6 +343,9 @@ def main_worker(gpu, ngpus_per_node, args):
             if mp_iou > best_mp_iou:
                 best_mp_iou = mp_iou
                 torch.save(model.state_dict(), args.save_dir + '/model_mp_{}.pth'.format(epoch))
+        
+        if epoch == 145:
+            torch.save(model.state_dict(), args.save_dir + '/model_mp_{}.pth'.format(epoch))
 
         # if not args.multiprocessing_distributed or (args.multiprocessing_distributed
         #         and args.rank % ngpus_per_node == 0):
@@ -416,8 +419,8 @@ def train(train_loader, class_weights, model, optimizer, scheduler, epoch, args,
             print('Train: [{0}][{1}/{2}]\t'
                   'loss {loss:.4f}'.format(epoch, i, len(train_loader), loss=loss.item()))
 
-    wandb.log({"epoch": epoch, "2601_aug/train_loss": loss})
-    wandb.log({"epoch": epoch, "2601_aug/train_jac": jac})
+    wandb.log({"epoch": epoch, "2801/train_loss": loss})
+    wandb.log({"epoch": epoch, "2801/train_jac": jac})
     #wandb.log({"train_iou": torch.mean(iou_pred)})
     #wandb.log({"epoch": epoch})
     
@@ -468,19 +471,19 @@ def validate(val_loader, model, epoch, args, writer):
             jac_list_oc.append(jac[2].item())
             jac_mean.append(jac_m.item())
 
-            wandb.log({"epoch": epoch, "2601_aug/val_loss_{}".format(i): loss.item()})
-            wandb.log({"epoch": epoch, "2601_aug/val_jac_mp_{}".format(i): jac[0].item()})
-            wandb.log({"epoch": epoch, "2601_aug/val_jac_si_{}".format(i): jac[1].item()})
-            wandb.log({"epoch": epoch, "2601_aug/val_jac_oc_{}".format(i): jac[2].item()})
-            wandb.log({"epoch": epoch, "2601_aug/val_jac_{}".format(i): jac_m.item()})
+            wandb.log({"epoch": epoch, "2801/val_loss_{}".format(i): loss.item()})
+            wandb.log({"epoch": epoch, "2801/val_jac_mp_{}".format(i): jac[0].item()})
+            wandb.log({"epoch": epoch, "2801/val_jac_si_{}".format(i): jac[1].item()})
+            wandb.log({"epoch": epoch, "2801/val_jac_oc_{}".format(i): jac[2].item()})
+            wandb.log({"epoch": epoch, "2801/val_jac_{}".format(i): jac_m.item()})
             #wandb.log({"val_iou": torch.mean(iou_pred)})
             #wandb.log({"epoch": epoch})
 
-    wandb.log({"epoch": epoch, "2601_aug/val_loss": np.mean(loss_list)})
-    wandb.log({"epoch": epoch, "2601_aug/val_jac_mp": np.mean(jac_list_mp)})
-    wandb.log({"epoch": epoch, "2601_aug/val_jac_si": np.mean(jac_list_si)})
-    wandb.log({"epoch": epoch, "2601_aug/val_jac_oc": np.mean(jac_list_oc)})
-    wandb.log({"epoch": epoch, "2601_aug/val_jac": np.mean(jac_mean)})
+    wandb.log({"epoch": epoch, "2801/val_loss": np.mean(loss_list)})
+    wandb.log({"epoch": epoch, "2801/val_jac_mp": np.mean(jac_list_mp)})
+    wandb.log({"epoch": epoch, "2801/val_jac_si": np.mean(jac_list_si)})
+    wandb.log({"epoch": epoch, "2801/val_jac_oc": np.mean(jac_list_oc)})
+    wandb.log({"epoch": epoch, "2801/val_jac": np.mean(jac_mean)})
     #wandb.log({"val_iou": torch.mean(iou_pred)})
     #wandb.log({"epoch": epoch})
 

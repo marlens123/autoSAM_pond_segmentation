@@ -168,6 +168,20 @@ def crop_center_square(image, im_size=480):
     cropped_image = image[top:bottom, left:right]
     return cropped_image
 
+def transform_color(image):
+    """
+    transforms 255-graylevel values to 0,1,2 as mask values
+    """
+    uniques = np.unique(image[-1])
+    for idx,elem in enumerate(uniques):
+        mask = np.where(image == elem)
+        image[mask] = idx
+
+        # one mask had four instead of three unique pixel values --> make sure the additional one is converted correctly
+        mask2 = np.where(image == 178)
+        image[mask2] = 1
+    return image
+
 def label_to_pixelvalue(image):
     """
     Transforms class labels to pixelvalues in the grayscale range to be able to make outcomes visible.

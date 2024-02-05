@@ -1,8 +1,9 @@
 # AutoSAM for Melt Pond Detection 
 
-(Training and test data is stored in ```data/training/``` and we provide the weights of our final model in ```experiments/2801_2/``` (lfs tracked)).
+This repository adapts AutoSAM introduced by Xinrong Hu et al. (credits below) to the segmentation of helicopter-borne Arctic thermal infrared images. The segmentation should be done into three classes: melt ponds, sea ice, and ocean.
 
-This repository adapts AutoSAM introduced by Xinrong Hu et al. (credits below) to the segmentation of helicopter-borne Arctic thermal infrared images. The segmentation should be done into three classes: melt ponds, sea ice, and ocean. A particular challenge for TIR imagery is the presence of spatially and temporally varying surface temperatures, so that classification cannot be based on spectral features alone.
+Training and validation data are stored in ```data/training/``` and we provide the weights of our final model in ```experiments/2801_2/``` (lfs tracked).
+Test images are stored in ```data/prediction/preprocessed/test/```.
 
 ## Setup
 This code requires `python>=3.10`, as well as `pytorch>=1.7` and `torchvision>=0.8`.  Install additional packages using ```pip install -r requirements.txt```.
@@ -26,6 +27,8 @@ python scripts/infer_ponds.py --pref ${storage_folder_name} --data 'data/predict
 python scripts/main_autosam_seg.py --save_dir ${storage_folder_name} --normalize
 python scripts/main_autosam_seg.py --save_dir ${storage_folder_name} --normalize --epochs 150 --augmentation --augment_mode 2 --pref ${pref_name_of_choice} --use_class_weights
 ```
+
+```preprocess_training.ipynb``` was used to preprocess the data.
 
 ## Credits
 The AutoSAM implementation is based on the work of [Hu, Xinrong and Xu, Xiaowei and Shi, Yiyu](https://github.com/xhu248/AutoSAM), licensed under the Apache 2.0 License. Modifications are listed in the respective files.

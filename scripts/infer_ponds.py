@@ -17,7 +17,7 @@ parser = argparse.ArgumentParser(description="Uses trained model to predict and 
 
 parser.add_argument("--pref", type=str, default="001", help="Identifier for the current prediction. Will be used as foldername to store results.")
 
-parser.add_argument("--data", default="IRdata_ATWAICE_preprocessed_220718_142920.nc", type=str, help="Either: 1) Filename of netCDF data file. For this, data must be stored in 'data/prediction/raw'. Or: 2) Absolute path to netCDF data file. Then data must not be copied in advance.")
+parser.add_argument("--data", default="data/prediction/raw/220718_2/IRdata_ATWAICE_processed_220717_122355.nc", type=str, help="Either: 1) Filename of netCDF data file. For this, data must be stored in 'data/prediction/raw'. Or: 2) Absolute path to netCDF data file. Then data must not be copied in advance.")
 parser.add_argument("--weights_path", default="experiments/AutoSamPonds3/model.pth", type=str, help="Path to model weights that should be used. Must contain the model architecture as second-to-last part of path (should be per default).")
 parser.add_argument("--preprocessed_path", default="data/prediction/preprocessed", type=str, help="Path to folder that should store the preprocessed images.")
 parser.add_argument("--predicted_path", default="data/prediction/predicted", type=str, help="Path to folder that should store the predicted image masks.")

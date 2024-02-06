@@ -15,12 +15,15 @@ The entire TIR dataset will be published in the future.
 ## How to use
 GPU required.
 
-### Predict images with fine-tuned AutoSAM
+### Predict validation images with fine-tuned AutoSAM
+```
+python scripts/infer_ponds.py --pref ${storage_folder_name} --weights_path 'experiments/2801_2/model_mp_145.pth' --normalize --skip_preprocessing --preprocessed_path 'data/prediction/preprocessed/val/' --val_predict
+```
 
+### Predict test images with fine-tuned AutoSAM
 ```
-python scripts/infer_ponds.py --pref ${storage_folder_name} --data 'data/prediction/raw/${path_to_nc_file_to_be_predicted}' --weights_path 'experiments/2801_2/model_mp_145.pth' --normalize
+python scripts/infer_ponds.py --pref ${storage_folder_name} --weights_path 'experiments/2801_2/model_mp_145.pth' --normalize --skip_preprocessing --preprocessed_path 'data/prediction/preprocessed/test/' --val_predict
 ```
-(full data for prediction currently not provided)
 
 ### Finetune AutoSAM
 ```

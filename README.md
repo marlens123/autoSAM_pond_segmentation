@@ -19,11 +19,13 @@ GPU required.
 ```
 python scripts/infer_ponds.py --pref ${storage_folder_name} --weights_path 'experiments/2801_2/model_mp_145.pth' --normalize --skip_preprocessing --preprocessed_path 'data/prediction/preprocessed/val/' --val_predict
 ```
+Images are then stored here ```data/prediction/predicted/${storage_folder_name} ```
 
 ### Predict test images with fine-tuned AutoSAM
 ```
 python scripts/infer_ponds.py --pref ${storage_folder_name} --weights_path 'experiments/2801_2/model_mp_145.pth' --normalize --skip_preprocessing --preprocessed_path 'data/prediction/preprocessed/test/' --val_predict
 ```
+Images are then stored here ```data/prediction/predicted/${storage_folder_name} ```
 
 ### Finetune AutoSAM
 ```

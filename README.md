@@ -1,6 +1,6 @@
 # AutoSAM for Melt Pond Detection 
 
-This repository adapts AutoSAM (credits in the paper) to the segmentation of helicopter-borne Arctic thermal infrared images. The segmentation should be done into three classes: melt ponds, sea ice, and ocean.
+This repository adapts AutoSAM introduced by Xinrong Hu et al. (credits below) to the segmentation of helicopter-borne Arctic thermal infrared images. The segmentation should be done into three classes: melt ponds, sea ice, and ocean.
 
 Training and validation data are stored in ```data/training/``` and we provide the weights of our final model in ```experiments/2801_2/``` (lfs tracked).
 Test images are stored in ```data/prediction/preprocessed/test/```.
@@ -51,3 +51,5 @@ Full citation of AutoSAM:
 ## Further Reference
 [1] Kanzow, Thorsten (2023). The Expedition PS131 of the Research Vessel POLARSTERN to the
 Fram Strait in 2022. Ed. by Horst Bornemann and Susan Amir Sawadkuhi. Bremerhaven. DOI: 10.57738/BzPM\_0770\_2023.
+
+Contact: marlena1@gmx.de

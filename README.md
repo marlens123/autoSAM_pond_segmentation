@@ -36,4 +36,18 @@ python scripts/main_autosam_seg.py --save_dir ${storage_folder_name} --normalize
 ```preprocess_training.ipynb``` was used to preprocess the data.
 
 ## Credits
-The AutoSAM implementation is based on the work of the original AutoSAM authors (which are credited in the paper), licensed under the Apache 2.0 License. Modifications are listed in the respective files.
+The AutoSAM implementation is based on the work of [Hu, Xinrong and Xu, Xiaowei and Shi, Yiyu](https://github.com/xhu248/AutoSAM), licensed under the Apache 2.0 License. Modifications are listed in the respective files.
+
+Full citation of AutoSAM:
+```
+@article{hu2023efficiently,
+  title={How to Efficiently Adapt Large Segmentation Model (SAM) to Medical Images},
+  author={Hu, Xinrong and Xu, Xiaowei and Shi, Yiyu},
+  journal={arXiv preprint arXiv:2306.13731},
+  year={2023}
+}
+```
+
+## Further Reference
+[1] Kanzow, Thorsten (2023). The Expedition PS131 of the Research Vessel POLARSTERN to the
+Fram Strait in 2022. Ed. by Horst Bornemann and Susan Amir Sawadkuhi. Bremerhaven. DOI: 10.57738/BzPM\_0770\_2023.

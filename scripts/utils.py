@@ -338,6 +338,7 @@ def predict_image(img, im_size, weights, model_type='vit_b', backbone='resnet34'
 
     visualize_ir(segmented_image)
     cv2.imwrite(save_path, segmented_image)
+    return segmented_image
 
 
 def calculate_mpf(dir):

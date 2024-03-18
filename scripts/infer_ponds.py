@@ -10,6 +10,7 @@ import cv2
 import csv
 import netCDF4
 import argparse
+import numpy as np
 import matplotlib.pyplot as plt
 from scripts.utils import calculate_mpf, predict_image, crop_center_square, label_to_pixelvalue
 
@@ -95,12 +96,12 @@ def main():
 
         # extract only every 4th image to avoid overlap
         for idx, img in enumerate(imgs):
-            if(idx % 4 == 0):
-                plt.imsave(os.path.join(params['preprocessed_path'], '{}.png'.format(idx)), img, cmap='gray')
+            plt.imsave(os.path.join(params['preprocessed_path'], '{}.png'.format(idx)), img, cmap='gray')
 
     if not params['skip_prediction']:
 
         print("Start predicting images...")
+        masks = []
 
         # extract surface masks from images
         for idx, file in enumerate(os.listdir(params['preprocessed_path'])):
@@ -109,7 +110,9 @@ def main():
 
             if file.endswith('.png'):
                 img = cv2.imread(os.path.join(params['preprocessed_path'], file), 0)
-                predict_image(img, 480, params['weights_path'], model_type=params['model_type'], backbone='resnet34', train_transfer='imagenet', save_path=os.path.join(params['predicted_path'],'raw/{}.png'.format(id)), visualize=False, normalize=params['normalize'], no_finetune=params['no_finetune'], model_arch=params['model'])
+                masks.append(predict_image(img, 480, params['weights_path'], model_type=params['model_type'], backbone='resnet34', train_transfer='imagenet', save_path=os.path.join(params['predicted_path'],'raw/{}.png'.format(id)), visualize=False, normalize=params['normalize'], no_finetune=params['no_finetune'], model_arch=params['model']))
+
+        np.save('data/to_nc/{}.npy'.format(params['pref']), np.array(masks))
 
     # optionally convert to grayscale images for visibility
     if params['convert_to_grayscale']:

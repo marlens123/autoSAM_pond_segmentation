@@ -178,6 +178,9 @@ old/
 
 data/training/training_old/
 
+to_nc/
+metrics/melt_pond_fraction/
+
 # weights and checkpoints
 *.pth
 !experiments/2801_2/model_mp_145.pth
@@ -185,11 +188,8 @@ data/training/training_old/
 visualize.ipynb
 
 # test files
-test.py
-test3.sh
-test4.sh
-tests2.sh
-tests.sh
+test_nc.py
+nc_runs.sh
 
 # tensorboard
 tensorboard0/

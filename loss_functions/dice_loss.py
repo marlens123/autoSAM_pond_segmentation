@@ -42,8 +42,16 @@ def mean_tensor(input, axes, keepdim=False):
 
 
 class SoftDiceLoss(nn.Module):
-    def __init__(self, smooth=1., apply_nonlin=None, batch_dice=False, do_bg=True, smooth_in_nom=True,
-                 background_weight=1, rebalance_weights=None):
+    def __init__(
+        self,
+        smooth=1.0,
+        apply_nonlin=None,
+        batch_dice=False,
+        do_bg=True,
+        smooth_in_nom=True,
+        background_weight=1,
+        rebalance_weights=None,
+    ):
         """
         hahaa no documentation for you today
         :param smooth:
@@ -56,7 +64,9 @@ class SoftDiceLoss(nn.Module):
         """
         super(SoftDiceLoss, self).__init__()
         if not do_bg:
-            assert background_weight == 1, "if there is no bg, then set background weight to 1 you dummy"
+            assert (
+                background_weight == 1
+            ), "if there is no bg, then set background weight to 1 you dummy"
         self.rebalance_weights = rebalance_weights
         self.background_weight = background_weight
         self.smooth_in_nom = smooth_in_nom
@@ -80,7 +90,6 @@ class SoftDiceLoss(nn.Module):
         if len(shp_x) != len(shp_y):
             y = y.view((shp_y[0], 1, *shp_y[1:]))
         # now x and y should have shape (B, C, X, Y(, Z))) and (B, 1, X, Y(, Z))), respectively
-        y_max = torch.max(y)
         y_onehot = torch.zeros(shp_x)
         if x.device.type == "cuda":
             y_onehot = y_onehot.cuda(x.device.index)
@@ -92,15 +101,22 @@ class SoftDiceLoss(nn.Module):
         if not self.batch_dice:
             if self.background_weight != 1 or (self.rebalance_weights is not None):
                 raise NotImplementedError("nah son")
-            l = soft_dice(x, y_onehot, self.smooth, self.smooth_in_nom)
+            loss = soft_dice(x, y_onehot, self.smooth, self.smooth_in_nom)
         else:
-            l = soft_dice_per_batch_2(x, y_onehot, self.smooth, self.smooth_in_nom,
-                                      background_weight=self.background_weight,
-                                      rebalance_weights=self.rebalance_weights)
-        return l
+            loss = soft_dice_per_batch_2(
+                x,
+                y_onehot,
+                self.smooth,
+                self.smooth_in_nom,
+                background_weight=self.background_weight,
+                rebalance_weights=self.rebalance_weights,
+            )
+        return loss
 
 
-def soft_dice_per_batch(net_output, gt, smooth=1., smooth_in_nom=1., background_weight=1):
+def soft_dice_per_batch(
+    net_output, gt, smooth=1.0, smooth_in_nom=1.0, background_weight=1
+):
     axes = tuple([0] + list(range(2, len(net_output.size()))))
     intersect = sum_tensor(net_output * gt, axes, keepdim=False)
     denom = sum_tensor(net_output + gt, axes, keepdim=False)
@@ -108,18 +124,25 @@ def soft_dice_per_batch(net_output, gt, smooth=1., smooth_in_nom=1., background_
     weights[0] = background_weight
     if net_output.device.type == "cuda":
         weights = weights.cuda(net_output.device.index)
-    result = (- ((2 * intersect + smooth_in_nom) / (denom + smooth)) * weights).mean()
+    result = (-((2 * intersect + smooth_in_nom) / (denom + smooth)) * weights).mean()
     return result
 
 
-def soft_dice_per_batch_2(net_output, gt, smooth=1., smooth_in_nom=1., background_weight=1, rebalance_weights=None):
+def soft_dice_per_batch_2(
+    net_output,
+    gt,
+    smooth=1.0,
+    smooth_in_nom=1.0,
+    background_weight=1,
+    rebalance_weights=None,
+):
     if rebalance_weights is not None and len(rebalance_weights) != gt.shape[1]:
         rebalance_weights = rebalance_weights[1:]  # this is the case when use_bg=False
     axes = tuple([0] + list(range(2, len(net_output.size()))))
     intersect = sum_tensor(net_output * gt, axes, keepdim=False)
-    net_output_sqaure = sum_tensor(net_output*net_output, axes, keepdim=False)
-    gt_square = sum_tensor(gt*gt, axes, keepdim=False)
-    #fn = sum_tensor((1 - net_output) * gt, axes, keepdim=False)
+    net_output_sqaure = sum_tensor(net_output * net_output, axes, keepdim=False)
+    gt_square = sum_tensor(gt * gt, axes, keepdim=False)
+    # fn = sum_tensor((1 - net_output) * gt, axes, keepdim=False)
     # fp = sum_tensor(net_output * (1 - gt), axes, keepdim=False)
     weights = torch.ones(intersect.shape)
     weights[0] = background_weight
@@ -131,17 +154,26 @@ def soft_dice_per_batch_2(net_output, gt, smooth=1., smooth_in_nom=1., backgroun
             rebalance_weights = rebalance_weights.cuda(net_output.device.index)
         intersect = intersect * rebalance_weights
         # fn = fn * rebalance_weights
-    result = (1 - (2*intersect + smooth_in_nom)/(net_output_sqaure + gt_square + smooth) * weights)
-    result = result[result > 0]  # ensure that when there is no target class, the dice loss is not too large
+    result = (
+        1
+        - (2 * intersect + smooth_in_nom)
+        / (net_output_sqaure + gt_square + smooth)
+        * weights
+    )
+    result = result[
+        result > 0
+    ]  # ensure that when there is no target class, the dice loss is not too large
     result = result.mean()
     return result
 
 
-def soft_dice(net_output, gt, smooth=1., smooth_in_nom=1.):
+def soft_dice(net_output, gt, smooth=1.0, smooth_in_nom=1.0):
     axes = tuple(range(2, len(net_output.size())))
     intersect = sum_tensor(net_output * gt, axes, keepdim=False)
     denom = sum_tensor(net_output + gt, axes, keepdim=False)
-    result = (- ((2 * intersect + smooth_in_nom) / (denom + smooth))).mean()  #TODO: Was ist weights and er Stelle?
+    result = (
+        -((2 * intersect + smooth_in_nom) / (denom + smooth))
+    ).mean()  # TODO: Was ist weights and er Stelle?
     return result
 
 
@@ -162,7 +194,7 @@ class MultipleOutputLoss(nn.Module):
             weights = [1] * len(x)
         else:
             weights = self.weight_factors
-        l = weights[0] * self.loss(x[0], y)
+        loss = weights[0] * self.loss(x[0], y)
         for i in range(1, len(x)):
-            l += weights[i] * self.loss(x[i], y)
-        return l
+            loss += weights[i] * self.loss(x[i], y)
+        return loss

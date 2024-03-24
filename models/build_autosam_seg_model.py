@@ -13,6 +13,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 """
+
 import torch
 
 from functools import partial
@@ -61,7 +62,7 @@ def _build_sam_seg_model(
             iou_head_depth=3,
             iou_head_hidden_dim=256,
             num_classes=num_classes,
-            dropout=dropout
+            dropout=dropout,
         ),
     )
 
@@ -71,7 +72,11 @@ def _build_sam_seg_model(
 
         loaded_keys = {}
         for k in state_dict.keys():
-            if k in sam_seg.state_dict().keys() and 'iou'not in k and "mask_tokens" not in k:
+            if (
+                k in sam_seg.state_dict().keys()
+                and "iou" not in k
+                and "mask_tokens" not in k
+            ):
                 loaded_keys[k] = state_dict[k]
         sam_seg.load_state_dict(loaded_keys, strict=False)
         print("loaded keys:", loaded_keys.keys())
@@ -122,4 +127,3 @@ sam_seg_model_registry = {
     "vit_l": build_sam_vit_l_seg_cnn,
     "vit_b": build_sam_vit_b_seg_cnn,
 }
-

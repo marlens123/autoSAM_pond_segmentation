@@ -14,8 +14,6 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-from typing import List
-import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
@@ -35,8 +33,7 @@ class AutoSamSeg(nn.Module):
         self.mask_decoder = seg_decoder
         self.pe_layer = PositionEmbeddingRandom(128)
 
-    def forward(self,
-                x):
+    def forward(self, x):
         original_size = x.shape[-1]
         x = F.interpolate(
             x,
@@ -44,10 +41,12 @@ class AutoSamSeg(nn.Module):
             mode="bilinear",
             align_corners=False,
         )
-        image_embedding = self.image_encoder(x) #[B, 256, 64, 64]
+        image_embedding = self.image_encoder(x)  # [B, 256, 64, 64]
         img_pe = self.pe_layer([64, 64]).unsqueeze(0)
-        mask, iou_pred = self.mask_decoder(image_embeddings=image_embedding.unsqueeze(1),
-                                           image_pe=img_pe, )
+        mask, iou_pred = self.mask_decoder(
+            image_embeddings=image_embedding.unsqueeze(1),
+            image_pe=img_pe,
+        )
 
         if mask.shape[-1] != original_size:
             mask = F.interpolate(
@@ -59,7 +58,6 @@ class AutoSamSeg(nn.Module):
         return mask, iou_pred
 
     def get_embedding(self, x):
-        original_size = x.shape[-1]
         x = F.interpolate(
             x,
             (self.image_encoder.img_size, self.image_encoder.img_size),

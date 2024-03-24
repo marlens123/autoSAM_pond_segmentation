@@ -17,20 +17,23 @@ GPU required.
 
 ### Predict validation images with fine-tuned AutoSAM
 ```
-python scripts/infer_ponds.py --pref ${storage_folder_name} --weights_path 'experiments/2801_2/model_mp_145.pth' --normalize --skip_preprocessing --preprocessed_path 'data/prediction/preprocessed/val/' --val_predict
+python -m scripts.infer_ponds --pref ${storage_folder_name} --weights_path 'experiments/2801_2/model_mp_145.pth' --skip_preprocessing --preprocessed_path 'data/prediction/preprocessed/val/' --val_predict
 ```
-Images are then stored here ```data/prediction/predicted/${storage_folder_name} ```
+Images are then stored here ```data/prediction/predicted/${storage_folder_name}```.
+
+The computed melt pond fraction will be stored in ```metrics/melt_pond_fraction/${storage_folder_name}```.
 
 ### Predict test images with fine-tuned AutoSAM
 ```
-python scripts/infer_ponds.py --pref ${storage_folder_name} --weights_path 'experiments/2801_2/model_mp_145.pth' --normalize --skip_preprocessing --preprocessed_path 'data/prediction/preprocessed/test/' --val_predict
+python -m scripts.infer_ponds --pref ${storage_folder_name} --weights_path 'experiments/2801_2/model_mp_145.pth' --skip_preprocessing --preprocessed_path 'data/prediction/preprocessed/test/' --val_predict
 ```
-Images are then stored here ```data/prediction/predicted/${storage_folder_name} ```
+Images are then stored here ```data/prediction/predicted/${storage_folder_name}```.
+
+The computed melt pond fraction will be stored in ```metrics/melt_pond_fraction/${storage_folder_name}```.
 
 ### Finetune AutoSAM
 ```
-python scripts/main_autosam_seg.py --save_dir ${storage_folder_name} --normalize
-python scripts/main_autosam_seg.py --save_dir ${storage_folder_name} --normalize --epochs 150 --augmentation --augment_mode 2 --pref ${pref_name_of_choice} --use_class_weights
+python -m scripts.main_autosam_seg --save_dir ${storage_folder_name} --pref ${wandb_pref_name_of_choice}
 ```
 
 ```preprocess_training.ipynb``` was used to preprocess the data.

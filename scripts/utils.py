@@ -11,7 +11,6 @@ import cv2
 import torch
 
 from models.build_autosam_seg_model import sam_seg_model_registry as autosam
-from models.build_sam_feat_seg_model import sam_feat_seg_model_registry as featseg
 
 import albumentations as A
 import random
@@ -270,21 +269,6 @@ def single_patch_predict(model, image, model_preprocessing, visualize=True, norm
         fin = np.argmax(mask.squeeze(axis=1), axis=0)
         print("Mask shape after squeeze: " + str(fin.shape))
         print(np.unique(fin))
-
-    elif model_arch == 'featseg':
-        mask = model.forward(image)
-
-        print("Mask shape: " + str(mask.shape))
-        mask = np.array(mask.cpu().detach())
-        print(np.unique(mask))
-        fin = mask.squeeze(axis=0)
-        #fin = np.argmax(mask.squeeze(axis=0), axis=1)
-        print("Mask shape after squeeze: " + str(fin.shape))
-        print(np.unique(fin))
-        #fin = np.argmax(fin, axis=0)
-        #print("Mask shape after argmax: " + str(fin.shape))
-        #print(np.unique(fin))
-        fin = fin.reshape(fin.shape[1], fin.shape[2], fin.shape[0])
 
     if visualize:
         fin = label_to_pixelvalue(fin)

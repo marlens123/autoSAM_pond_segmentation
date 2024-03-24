@@ -1,7 +1,5 @@
 # inspired by https://github.com/qubvel/segmentation_models.pytorch
 
-import os
-import cv2
 import numpy as np
 
 from .utils import get_training_augmentation, get_preprocessing, expand_greyscale_channels
@@ -60,12 +58,6 @@ class Dataset(BaseDataset):
         print(mask.shape)
         print(np.unique(mask))
 
-        # one-hot encoding of masks
-        #masks = [(mask == v) for v in self.class_values]
-        #mask = np.stack(masks, axis=-1).astype('float')
-        #background = 1 - mask.sum(axis=-1, keepdims=True)
-        #mask = np.concatenate((mask, background), axis=-1)
-
         image = image.astype(np.float32)
         mask = mask.astype(np.float32)
 
@@ -83,12 +75,6 @@ class Dataset(BaseDataset):
         if self.preprocessing:
             sample = self.preprocessing(image=image, mask=mask)
             image, mask = sample['image'], sample['mask']
-
-        #print("Shape image: {}".format(image.shape))
-        #print("Shape mask: {}".format(mask.shape))
-
-        #print("Type image: {}".format(image.dtype))
-        #print("Type mask: {}".format(mask.dtype))
 
         return image, mask
     

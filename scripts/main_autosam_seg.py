@@ -53,7 +53,7 @@ import torchvision.models as models
 from torchmetrics import JaccardIndex
 
 from loss_functions.dice_loss import SoftDiceLoss
-from loss_functions.metrics import dice_pytorch, SegmentationMetric
+from loss_functions.metrics import SegmentationMetric
 
 from models.build_autosam_seg_model import sam_seg_model_registry
 
@@ -657,6 +657,3 @@ def accuracy(output, target, topk=(1,)):
 
 if __name__ == '__main__':
     main()
-
-    # python main_moco.py --data_dir ./data/mmwhs/ --do_contrast --dist-url 'tcp://localhost:10001'
-    # --multiprocessing-distributed --world-size 1 --rank 0

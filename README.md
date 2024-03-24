@@ -5,6 +5,9 @@ This repository adapts AutoSAM to the segmentation of helicopter-borne Arctic th
 Training and validation data are stored in ```data/training/``` and we provide the weights of our final model in ```experiments/2801_2/``` (lfs tracked).
 Test images are stored in ```data/prediction/preprocessed/test/```.
 
+![results_2701_test](https://github.com/marlens123/autoSAM_pond_segmentation/assets/80780236/e5ed5387-fe31-449a-b9dc-f2625a3bae20)
+
+
 ## Setup
 This code requires `python>=3.10`, as well as `pytorch>=1.7` and `torchvision>=0.8`.  Install additional packages using ```pip install -r requirements.txt```.
 
